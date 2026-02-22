@@ -222,8 +222,6 @@ export default function Home() {
 
   // Загружаем ближайших медсестёр когда есть локация
   const fetchNearbyNurses = (loc) => {
-    // radius=50 — список "Свободные медсёстры" показывает всех в округе
-    // На карте и в заказах используется строго 5-10 км (фильтр ниже и бэкенд)
     api.get(`/nurses/nearby?lat=${loc.lat}&lng=${loc.lng}&radius=50`)
       .then(r => setNearbyNurses(r.data))
       .catch(() => {})
@@ -232,9 +230,25 @@ export default function Home() {
   useEffect(() => {
     if (!clientLocation) return
     fetchNearbyNurses(clientLocation)
-    // Обновляем каждые 10 секунд — медсёстры могут выходить/уходить с найма
-    const interval = setInterval(() => fetchNearbyNurses(clientLocation), 10000)
-    return () => clearInterval(interval)
+  }, [clientLocation])
+
+  // Постоянный сокет — реалтайм обновления медсестёр и позиций
+  useEffect(() => {
+    const socket = io(SOCKET_URL, { transports: ['websocket'] })
+
+    // Медсестра вышла/ушла с найма — обновляем список
+    socket.on('nurses:updated', () => {
+      if (clientLocation) fetchNearbyNurses(clientLocation)
+    })
+
+    // Позиция медсестры обновилась — двигаем маркер на карте
+    socket.on('nurse:position', ({ nurseId, lat, lng }) => {
+      setNearbyNurses(prev => prev.map(n =>
+        n.id === nurseId ? { ...n, currentLatitude: lat, currentLongitude: lng } : n
+      ))
+    })
+
+    return () => socket.disconnect()
   }, [clientLocation])
 
   // Сокет для трекинга заказа
