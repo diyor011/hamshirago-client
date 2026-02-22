@@ -241,7 +241,7 @@ export default function Home() {
   useEffect(() => {
     if (!activeOrder) return
 
-    const socket = io(SOCKET_URL)
+    const socket = io(SOCKET_URL, { transports: ['websocket'] })
     socketRef.current = socket
     socket.emit('order:watch', { orderId: activeOrder.id })
 
