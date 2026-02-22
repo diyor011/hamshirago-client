@@ -13,6 +13,7 @@ export default function ActiveOrder({ order, onClose }) {
   const [liveEta, setLiveEta] = useState(order.eta)
   useEffect(() => { setLiveEta(order.eta) }, [order.eta])
 
+  const isNoNurses = order.status === 'no_nurses'
   const isPending = order.status === 'pending'
   const stepIdx = isPending ? -1 : (STEP_INDEX[order.status] ?? 0)
   const nurseColor = '#8B5CF6'
@@ -26,10 +27,10 @@ export default function ActiveOrder({ order, onClose }) {
       transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
       style={{
         background: 'rgba(255,255,255,0.04)',
-        border: `1.5px solid ${isPending ? 'rgba(245,158,11,0.35)' : 'rgba(59,130,246,0.3)'}`,
+        border: `1.5px solid ${isNoNurses ? 'rgba(239,68,68,0.35)' : isPending ? 'rgba(245,158,11,0.35)' : 'rgba(59,130,246,0.3)'}`,
         borderRadius: 22, padding: 20, marginBottom: 20,
         position: 'relative', overflow: 'hidden',
-        boxShadow: isPending ? '0 8px 32px rgba(245,158,11,0.1)' : '0 8px 32px rgba(37,99,235,0.15)',
+        boxShadow: isNoNurses ? '0 8px 32px rgba(239,68,68,0.1)' : isPending ? '0 8px 32px rgba(245,158,11,0.1)' : '0 8px 32px rgba(37,99,235,0.15)',
       }}
     >
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(135deg, rgba(37,99,235,0.06) 0%, transparent 60%)' }} />
@@ -51,8 +52,22 @@ export default function ActiveOrder({ order, onClose }) {
         cursor: 'pointer', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>✕</button>
 
-      {/* ── СТАТУС: ИЩЕМ МЕДСЕСТРУ ── */}
-      {isPending ? (
+      {/* ── СТАТУС: НЕТ МЕДСЕСТЁР ── */}
+      {isNoNurses ? (
+        <div style={{ textAlign: 'center', padding: '10px 0' }}>
+          <div style={{ fontSize: 36, marginBottom: 10 }}>😔</div>
+          <div style={{ color: '#FCA5A5', fontWeight: 800, fontSize: 16, marginBottom: 8 }}>
+            Медсестра не найдена
+          </div>
+          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 20 }}>
+            Все медсёстры заняты или недоступны.<br/>Попробуйте заказать снова через несколько минут.
+          </div>
+          <button onClick={onClose}
+            style={{ width: '100%', padding: '12px', borderRadius: 14, border: 'none', background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+            Закрыть
+          </button>
+        </div>
+      ) : isPending ? (
         <div>
           <span style={{ color: '#F59E0B', fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', display: 'block', marginBottom: 14 }}>
             ● Поиск медсестры

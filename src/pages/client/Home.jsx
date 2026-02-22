@@ -52,7 +52,7 @@ function Sidebar({ userName }) {
     { icon: '👤', label: 'Профиль', active: false },
   ]
   return (
-    <div style={{ width: 260, flexShrink: 0, background: 'rgba(255,255,255,0.02)', borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', padding: '28px 0', position: 'sticky', top: 0, height: '100vh' }}>
+    <div style={{ width: 260, flexShrink: 0, background: 'rgba(255,255,255,0.02)', borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', padding: '28px 0', height: '100vh', overflowY: 'auto' }}>
       <div style={{ padding: '0 24px 32px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="10" fill="#2563EB"/><rect x="16" y="8" width="4" height="20" rx="2" fill="white"/><rect x="8" y="16" width="20" height="4" rx="2" fill="white"/></svg>
         <span style={{ fontWeight: 900, fontSize: 18, color: 'white' }}>Hamshira<span style={{ color: '#60A5FA' }}>Go</span></span>
@@ -273,10 +273,9 @@ export default function Home() {
       if (status === 'completed') closeOrder()
     })
 
-    // Все медсёстры отказали или офлайн
+    // Все медсёстры отказали или офлайн — показываем статус в карточке заказа
     socket.on('order:no_nurses', () => {
-      closeOrder()
-      alert('😔 Нет доступных медсестёр рядом. Попробуйте позже или измените адрес.')
+      setActiveOrder(prev => prev ? { ...prev, status: 'no_nurses' } : prev)
     })
 
     return () => socket.disconnect()
@@ -547,14 +546,14 @@ export default function Home() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#060A12', display: 'flex', overflow: 'hidden' }}>
+    <div style={{ height: '100vh', background: '#060A12', display: 'flex', overflow: 'hidden' }}>
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', top: -100, right: -100, width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle,rgba(37,99,235,0.07) 0%,transparent 70%)' }} />
       </div>
 
       {isDesktop && <Sidebar userName={userName} />}
 
-      <div style={{ flex: 1, overflow: 'auto', position: 'relative', zIndex: 1 }}>
+      <div style={{ flex: 1, overflowY: 'auto', position: 'relative', zIndex: 1 }}>
         {mainContent}
       </div>
 
