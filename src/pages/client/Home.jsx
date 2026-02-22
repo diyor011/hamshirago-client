@@ -245,8 +245,8 @@ export default function Home() {
     socketRef.current = socket
     socket.emit('order:watch', { orderId: activeOrder.id })
 
-    socket.on('order:matched', ({ nurse, eta }) => {
-      setActiveOrder(prev => ({ ...prev, status: 'accepted', nurse, eta }))
+    socket.on('order:matched', (data) => {
+      setActiveOrder(prev => ({ ...prev, status: 'accepted', nurse: data.nurse, eta: data.eta }))
     })
 
     socket.on('nurse:moved', ({ lat, lng, eta }) => {
@@ -479,7 +479,9 @@ export default function Home() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {nearbyNurses.map(n => (
                     <NurseCard key={n.id} nurse={n} onCall={() => {
-                      setShowLocationModal(!clientLocation)
+                      if (!clientLocation) { setShowLocationModal(true); return }
+                      if (!selected) { alert('Сначала выберите услугу'); return }
+                      handleCallService()
                     }} />
                   ))}
                 </div>
