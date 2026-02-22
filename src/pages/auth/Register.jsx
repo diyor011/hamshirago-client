@@ -284,9 +284,16 @@ export default function Register() {
                 >
                   <p style={{ color: '#60A5FA', fontWeight: 700, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>Шаг 2 из 2</p>
                   <h1 style={{ fontSize: isDesktop ? 26 : 22, fontWeight: 900, color: 'white', letterSpacing: '-0.5px', marginBottom: 6 }}>Введите код</h1>
-                  <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, marginBottom: 24 }}>
+                  <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, marginBottom: 16 }}>
                     Отправили на <span style={{ color: 'white', fontWeight: 700 }}>{form.phone}</span>
                   </p>
+
+                  {devCode && (
+                    <div style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 12, padding: '10px 16px', marginBottom: 16, textAlign: 'center' }}>
+                      <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>Ваш код: </span>
+                      <span style={{ color: '#34D399', fontWeight: 900, fontSize: 22, letterSpacing: 6 }}>{devCode}</span>
+                    </div>
+                  )}
 
                   {/* OTP поля */}
                   <div style={{ display: 'flex', gap: 10, marginBottom: 28, width: '100%' }}>
